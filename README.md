@@ -1,4 +1,4 @@
-# LLM Wall 🛡️ — Agentic Security Fabric for LLM Infrastructure
+# LLM Wall 🛡️ Agentic Security Fabric for LLM Infrastructure
 
 > AI-native semantic firewall that intercepts, analyses, and audits every LLM
 > call using multi-agent Guardian analysis, MARL adaptive defense, Sentinel
