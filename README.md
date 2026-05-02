@@ -1,173 +1,315 @@
-# LLM Wall 🛡️ Agentic Security Fabric for LLM Infrastructure
+---
 
-> AI-native semantic firewall that intercepts, analyses and blocks out of scope prompts by user preventing misuse of tokens, and audits every LLM
-> call using multi-agent Guardian analysis, MARL adaptive defense, Sentinel
-> threat-intel mesh, and a blockchain audit ledger.
+# 🚧 LLM Wall — Centralized Secure LLM Proxy
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)](https://fastapi.tiangolo.com)
-[![React 18](https://img.shields.io/badge/React-18-61dafb)](https://react.dev)
+> **A Zero-Trust Security Layer for LLM APIs**
+> Control *who*, *how*, and *why* AI is used inside your organization.
 
 ---
 
-## Architecture
+## ❌ Problem
 
-```
-Client → NGINX → FastAPI Proxy
-                    ├── Guardian Engine (4 parallel agents)
-                    │     ├── Intent Agent     (LLM-based)
-                    │     ├── Injection Agent  (regex + 27 patterns)
-                    │     ├── CoT Inspector    (multi-turn analysis)
-                    │     └── Risk Scorer      (weighted aggregation)
-                    ├── MARL Engine (4 Q-learning agents, consensus vote)
-                    ├── A2A Bus (pub/sub threat signals)
-                    ├── MCP Broker (tool-call gating)
-                    ├── Sentinel Node (IOC store + HTTP gossip mesh)
-                    └── Blockchain Ledger (SHA-256 PoW + Merkle tree)
-```
+Today, LLM usage inside organizations is **largely ungoverned**:
 
-## Quick Start
+* API keys are scattered across services
+* No control over *what prompts are being sent*
+* No enforcement of **business purpose**
+* No protection against:
 
-### 1. Prerequisites
+  * Prompt injection
+  * Data exfiltration
+  * Misuse (e.g., non-business queries)
+* No audit trail or accountability
 
-- Python 3.11+
-- Node.js 20+
-- [Ollama](https://ollama.ai) running locally (pull `llama3.2:3b`)
-
-```bash
-ollama pull llama3.2:3b
-```
-
-### 2. Setup
-
-```bash
-# Clone and enter the project
-cd "d:\Devops\LLM Wall"
-
-# Copy and edit environment config
-cp .env.example .env
-# Edit .env: add OPENAI_API_KEY, GEMINI_API_KEY, NVIDIA_API_KEY as needed
-
-# Create Python virtual environment
-python -m venv .venv
-.venv\Scripts\activate        # Windows
-# source .venv/bin/activate   # macOS/Linux
-
-# Install Python dependencies
-pip install -r requirements.txt
-```
-
-### 3. Run Backend
-
-```bash
-# From project root (with venv activated)
-python -m llm_wall.core.app
-```
-
-Backend available at: **http://localhost:8000**
-- Swagger UI: http://localhost:8000/docs
-- Health: http://localhost:8000/health
-
-### 4. Run Dashboard
-
-```bash
-cd dashboard
-npm install
-npm run dev
-```
-
-Dashboard at: **http://localhost:5173**
-
-### 5. Docker Compose (all-in-one)
-
-```bash
-cp .env.example .env
-# Edit .env with your API keys
-docker compose up --build
-```
-
-- API: http://localhost:8000
-- Dashboard: http://localhost:5173
-- NGINX: http://localhost:80
+👉 Result: **Security, compliance, and cost risks grow silently**
 
 ---
 
-## Supported LLM Providers
+## 💡 Solution
 
-| Provider | Model | Key Env Var |
-|---|---|---|
-| Ollama (local) | `llama3.2:3b` (configurable) | None |
-| OpenAI | `gpt-4o-mini` (configurable) | `OPENAI_API_KEY` |
-| Google Gemini | `gemini-1.5-flash` | `GEMINI_API_KEY` |
-| NVIDIA NIM | Kimi 2.5 / Mistral | `NVIDIA_API_KEY` |
+**LLM Wall** acts as a **centralized proxy layer** between your applications and LLM providers.
 
-Set `GUARDIAN_ANALYSIS_PROVIDER=ollama|openai|gemini|nvidia` to control which
-LLM powers the Guardian classification agents.
+```
+App → LLM Wall → OpenAI / Ollama / Gemini / NVIDIA
+```
+
+It enforces:
+
+* 🔐 Zero-trust prompt validation
+* 🎯 Purpose-based access control
+* 🧠 Multi-agent threat detection
+* 📊 Risk scoring + decision engine
+* 🧾 Immutable audit logging (blockchain-backed)
+* 🌐 Distributed threat intelligence (Sentinel mesh)
 
 ---
 
-## Using as a Proxy
+## 🧠 Core Idea
 
-LLM Wall is an **OpenAI-compatible drop-in proxy**. Point your existing client
-at `http://localhost:8000` and add the provider header:
+> **LLM access should be governed like production database access.**
+
+---
+
+## 🏗️ Architecture
+
+```
+                ┌────────────────────┐
+                │   Client Apps      │
+                │ (ML / Backend APIs)│
+                └─────────┬──────────┘
+                          │
+                          ▼
+                ┌────────────────────┐
+                │    LLM Wall        │
+                │  (FastAPI Proxy)   │
+                └─────────┬──────────┘
+                          │
+        ┌─────────────────┼─────────────────┐
+        ▼                 ▼                 ▼
+ ┌────────────┐   ┌──────────────┐   ┌──────────────┐
+ │ Guardian   │   │  Sentinel     │   │   Ledger     │
+ │ (Security) │   │ (Threat Mesh) │   │ (Audit Chain)│
+ └────────────┘   └──────────────┘   └──────────────┘
+        │
+        ▼
+ ┌────────────────────┐
+ │ External LLM APIs  │
+ │ OpenAI / Ollama    │
+ │ Gemini / NVIDIA    │
+ └────────────────────┘
+```
+
+---
+
+## 🛡️ Guardian Engine (Security Brain)
+
+A multi-agent system that analyzes every prompt:
+
+| Agent              | Purpose                             |
+| ------------------ | ----------------------------------- |
+| Intent Agent       | Detects suspicious intent           |
+| Injection Agent    | Detects prompt injection            |
+| CoT Inspector      | Detects reasoning anomalies         |
+| **Fidelity Agent** | Enforces business-purpose alignment |
+| IOC Matcher        | Matches known threats               |
+
+### Output
+
+* Risk Score (0–100)
+* Threat Category
+* Action: `allow | rate_limit | block`
+
+---
+
+## 🎯 Purpose Enforcement
+
+Each deployment defines a strict system purpose:
 
 ```python
-import openai
+app_system_purpose = """
+This system is a professional LLM interface for business operations.
+It should not be used for personal, creative, or unrelated purposes.
+"""
+```
 
-client = openai.OpenAI(
+### Example Behavior
+
+| Prompt           | Result    |
+| ---------------- | --------- |
+| "Explain DevOps" | ✅ Allowed |
+| "Tell me a joke" | ❌ Blocked |
+| "Write a story"  | ❌ Blocked |
+
+---
+
+## ⚙️ Features
+
+* ✅ OpenAI-compatible API (`/v1/chat/completions`)
+* 🔐 API key abstraction (no direct exposure)
+* 🧠 Multi-agent security analysis
+* ⚖️ Confidence-weighted risk scoring
+* 🚫 Hard-block for high-risk signals
+* 📉 Rate limiting for borderline prompts
+* 🧾 Blockchain-based audit logs
+* 🌐 Distributed IOC sharing (Sentinel)
+* 🤖 MARL-based adaptive decision engine
+
+---
+
+## 📊 Example Risk Decision
+
+```
+Risk: 80/100 (HIGH) | Primary threat: out_of_scope
+  [intent_agent] score=35 conf=0.60
+  [fidelity_agent] score=80 conf=1.00: Out-of-scope request
+```
+
+---
+
+## 🚀 Demo
+
+### Run locally
+
+```bash
+git clone https://github.com/yourusername/llm-wall
+cd llm-wall
+
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+pip install -r requirements.txt
+
+uvicorn llm_wall.core.app:app --reload
+```
+
+---
+
+### Test via OpenAI SDK
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
     base_url="http://localhost:8000/v1",
-    api_key="not-needed",
-    default_headers={"X-LLM-Provider": "ollama"},  # or openai/gemini/nvidia
+    api_key="not-needed"
 )
 
 response = client.chat.completions.create(
-    model="llama3.2:3b",
-    messages=[{"role": "user", "content": "Hello!"}],
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": "Explain DevOps"}
+    ]
 )
-```
 
-Blocked requests return **HTTP 403** with a JSON body:
-```json
-{
-  "error": {
-    "type": "security_block",
-    "risk_score": 87,
-    "category": "prompt_injection",
-    "explanation": "...",
-    "request_id": "..."
-  }
-}
+print(response.choices[0].message.content)
 ```
 
 ---
 
-## Security Testing
+## 📈 Benchmarks *(replace with real metrics)*
 
-```bash
-# Run the built-in injection test suite (10 tests)
-python scripts/test_injection.py --url http://localhost:8000
-
-# Verify blockchain integrity
-python scripts/verify_ledger.py --path ./data/ledger.json
-
-# Run unit tests
-pytest llm_wall/tests/ -v --cov=llm_wall
-```
+| Metric               | Value      |
+| -------------------- | ---------- |
+| Avg latency overhead | ~40–80 ms  |
+| Detection accuracy   | ~85–92%    |
+| False positives      | ~5–10%     |
+| Throughput           | ~X req/sec |
 
 ---
 
-## Configuration Reference
+## 🏢 How This Can Be Used in Organizations
 
-All settings are in `.env`. Key variables:
+### 1. Centralized LLM Governance
 
-| Variable | Default | Description |
-|---|---|---|
-| `GUARDIAN_ANALYSIS_PROVIDER` | `ollama` | LLM for Guardian agents |
-| `GUARDIAN_RISK_THRESHOLD_BLOCK` | `75` | Score ≥ threshold → BLOCK |
-| `GUARDIAN_RISK_THRESHOLD_QUARANTINE` | `50` | Score ≥ threshold → QUARANTINE |
-| `SENTINEL_PEERS` | `""` | Comma-separated peer URLs |
-| `LEDGER_DIFFICULTY` | `2` | Blockchain PoW difficulty 1-5 |
-| `MARL_EPSILON` | `0.2` | MARL exploration rate |
+* Single controlled gateway for all LLM usage
+* No direct API key exposure across services
 
+---
+
+### 2. Security & Compliance
+
+* Detect and block prompt injection
+* Prevent sensitive data leakage
+* Enforce usage policies consistently
+
+---
+
+### 3. Cost Control
+
+* Track usage per application/team
+* Apply rate limits and quotas
+* Prevent non-essential usage
+
+---
+
+### 4. Observability
+
+* Full audit logs of:
+
+  * prompts
+  * decisions
+  * risk scores
+
+---
+
+### 5. Multi-Model Abstraction
+
+* Seamlessly switch between:
+
+  * OpenAI
+  * Ollama (on-prem)
+  * Gemini
+  * NVIDIA NIM
+
+---
+
+## 🏢 How This System Benefits Organizations
+
+Modern organizations are rapidly integrating LLMs into critical workflows—ranging from customer-facing systems to internal automation. However, this adoption often happens without centralized control, introducing security and operational risks.
+
+**LLM Wall introduces a governed access layer for AI usage.**
+
+---
+
+### 🔐 Secure Customer-Facing AI Systems
+
+* Prevent unintended data exposure
+* Block adversarial prompts
+* Keep interactions aligned with business goals
+
+---
+
+### ⚙️ Controlled AI Usage in Critical Workflows
+
+* Validate prompts against intended use-cases
+* Restrict unsafe or irrelevant queries
+* Maintain predictable system behavior
+
+---
+
+### 🧭 Governance for Internal AI Tools
+
+* Enforce purpose-based access control
+* Reduce misuse and non-work queries
+* Standardize AI behavior across teams
+
+---
+
+### 📊 Auditability and Compliance
+
+* Traceable logs of all AI interactions
+* Explainable risk scoring
+* Structured audit trails for review
+
+---
+
+### 🌐 Centralized Control Plane
+
+```
+Application → LLM Wall → LLM Providers
+```
+
+* Eliminates API key sprawl
+* Enables provider abstraction
+* Simplifies monitoring and control
+
+---
+
+### 🛡️ Defense-in-Depth
+
+* Multiple independent detection agents
+* No single point of failure
+* Reduced reliance on model-native safety
+
+---
+
+## 🔮 Future Roadmap
+
+* 🔐 Per-app API keys + RBAC
+* ☸️ Kubernetes-native deployment (sidecar model)
+* 📊 Observability dashboard (Grafana)
+* 🧠 Fine-tuned local Guardian models
+* 🔍 Prompt lineage tracing
+* 🧾 SIEM integration (Splunk, ELK)
 
 ---
