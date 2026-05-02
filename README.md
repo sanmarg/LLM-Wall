@@ -1,6 +1,6 @@
 # LLM Wall 🛡️ Agentic Security Fabric for LLM Infrastructure
 
-> AI-native semantic firewall that intercepts, analyses, and audits every LLM
+> AI-native semantic firewall that intercepts, analyses and blocks out of scope prompts by user preventing misuse of tokens, and audits every LLM
 > call using multi-agent Guardian analysis, MARL adaptive defense, Sentinel
 > threat-intel mesh, and a blockchain audit ledger.
 
