@@ -1,4 +1,4 @@
-# LLM Wall — Centralized Secure LLM Proxy
+# LLM Wall: Centralized Secure LLM 
 
 > **A Zero-Trust Security Layer for LLM APIs**
 > Control *who*, *how*, and *why* AI is used inside your organization.
