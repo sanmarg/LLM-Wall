@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "llm-wall"
+version = "1.0.0"
+description = "Agentic Security Fabric for LLM Infrastructure"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+authors = [{name = "LLM Wall Team"}]
+keywords = ["security", "llm", "ai", "firewall", "prompt-injection"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+]
+
+[project.scripts]
+llm-wall = "llm_wall.core.app:main"
+
+[tool.pylint.main]
+max-line-length = 80
+disable = ["C0114", "R0903"]
+
+[tool.pylint.format]
+indent-string = "    "
+
+[tool.isort]
+profile = "google"
+line_length = 80
+force_sort_within_sections = true
+known_first_party = ["llm_wall"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["llm_wall/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["llm_wall"]
+omit = ["llm_wall/tests/*", "scripts/*"]
