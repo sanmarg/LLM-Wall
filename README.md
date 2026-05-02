@@ -190,4 +190,3 @@ Maintain a full, immutable audit trail of every interaction for regulatory requi
 * ☸️ **K8s Sidecar:** Deployment as a service mesh sidecar.
 * 📊 **Dashboard:** Real-time risk and cost monitoring in Grafana.
 * 🔍 **Lineage:** Tracking prompt evolution across multi-step agents.
-```
