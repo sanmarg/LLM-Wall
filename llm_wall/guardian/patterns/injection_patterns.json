@@ -1,0 +1,109 @@
+{
+  "injection_patterns": [
+    {
+      "id": "INJ-001",
+      "name": "Classic ignore instruction",
+      "pattern": "ignore (all |previous |your |prior )?(instructions?|prompt|rules?|guidelines?|constraints?)",
+      "severity": 9,
+      "category": "prompt_injection"
+    },
+    {
+      "id": "INJ-002",
+      "name": "Forget instruction",
+      "pattern": "forget (everything|all|your|previous|what|the|prior)",
+      "severity": 8,
+      "category": "prompt_injection"
+    },
+    {
+      "id": "INJ-003",
+      "name": "Override system prompt",
+      "pattern": "(override|bypass|disregard|circumvent) (the |your |all |)?(system|safety|content|ai|model)? ?(prompt|policy|guidelines?|rules?|filters?|restrictions?|limitations?)",
+      "severity": 9,
+      "category": "prompt_injection"
+    },
+    {
+      "id": "INJ-004",
+      "name": "New instruction injection",
+      "pattern": "\\[NEW (INSTRUCTION|SYSTEM|OVERRIDE|DIRECTIVE)\\]",
+      "severity": 10,
+      "category": "prompt_injection"
+    },
+    {
+      "id": "INJ-005",
+      "name": "Act as different AI",
+      "pattern": "(act|pretend|behave|respond) as (if you (are|were)|a|an) (different|uncensored|unrestricted|free|real|human|evil|bad|malicious|hacked|compromised|unfiltered)",
+      "severity": 8,
+      "category": "identity_override"
+    },
+    {
+      "id": "INJ-006",
+      "name": "Hidden text injection",
+      "pattern": "<(script|style|hidden|comment)[^>]*>.*?<\\/\\1>",
+      "severity": 10,
+      "category": "prompt_injection"
+    },
+    {
+      "id": "INJ-007",
+      "name": "Unicode homoglyph attack",
+      "pattern": "[\\u0400-\\u04FF]{3,}|[\\u0370-\\u03FF]{3,}",
+      "severity": 7,
+      "category": "prompt_injection"
+    },
+    {
+      "id": "INJ-008",
+      "name": "Base64 encoded instructions",
+      "pattern": "(decode|base64|execute|run|eval).*([A-Za-z0-9+/]{20,}={0,2})",
+      "severity": 8,
+      "category": "prompt_injection"
+    },
+    {
+      "id": "INJ-009",
+      "name": "Tool call injection",
+      "pattern": "<tool_call>|<function_calls>|\\{\"function\":|\\{\"tool\":",
+      "severity": 7,
+      "category": "tool_abuse"
+    },
+    {
+      "id": "INJ-010",
+      "name": "Prompt leakage attempt",
+      "pattern": "(print|output|show|reveal|display|what (is|are)) (your (system |initial |original |full |exact |complete )?prompt|your instructions)",
+      "severity": 7,
+      "category": "data_exfiltration"
+    },
+    {
+      "id": "INJ-011",
+      "name": "Context manipulation",
+      "pattern": "end of (system|user|assistant) (message|prompt|context|input)",
+      "severity": 8,
+      "category": "prompt_injection"
+    },
+    {
+      "id": "INJ-012",
+      "name": "API key extraction",
+      "pattern": "(give|send|output|print|show|tell) (me |us )?(your |the )?(api|secret|access|private) ?(key|token|credential|password)",
+      "severity": 10,
+      "category": "data_exfiltration"
+    },
+    {
+      "id": "INJ-013",
+      "name": "Shell command injection",
+      "pattern": "(execute|run|eval|shell|bash|cmd|powershell|system|os\\.system|subprocess)\\s*[\\(\\[`]",
+      "severity": 10,
+      "category": "tool_abuse"
+    },
+    {
+      "id": "INJ-014",
+      "name": "SSRF via tool",
+      "pattern": "(http://|https://)(localhost|127\\.0\\.0\\.1|0\\.0\\.0\\.0|169\\.254\\.|::1|10\\.|192\\.168\\.|172\\.(1[6-9]|2[0-9]|3[01])\\.)",
+      "severity": 9,
+      "category": "data_exfiltration"
+    },
+    {
+      "id": "INJ-015",
+      "name": "Instruction boundary escape",
+      "pattern": "---+\\s*(SYSTEM|USER|ASSISTANT|HUMAN|AI|INST|<<SYS>>)",
+      "severity": 9,
+      "category": "prompt_injection"
+    }
+  ]
+}

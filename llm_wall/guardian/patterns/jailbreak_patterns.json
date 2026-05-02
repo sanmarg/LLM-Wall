@@ -1,0 +1,88 @@
+{
+  "jailbreak_patterns": [
+    {
+      "id": "JB-001",
+      "name": "DAN (Do Anything Now)",
+      "pattern": "\\bDAN\\b|do anything now|jailbreak mode|developer mode",
+      "severity": 10,
+      "category": "jailbreak"
+    },
+    {
+      "id": "JB-002",
+      "name": "Role-play unrestricted character",
+      "pattern": "(play|roleplay|act as|you are now|pretend you are|you must play) (DAN|DAX|JAILBREAK|CHAOS|EVIL|SATAN|an AI without restrictions|an unrestricted AI|a model without safety|a free AI)",
+      "severity": 10,
+      "category": "jailbreak"
+    },
+    {
+      "id": "JB-003",
+      "name": "Training fiction bypass",
+      "pattern": "(in this (fictional|hypothetical|imaginary|story|creative|roleplay|game) (context|scenario|world|setting|universe))[^.]{0,100}(you can|you must|you should|you will|please|allowed to|free to) (say|write|generate|produce|create|output|explain)",
+      "severity": 9,
+      "category": "jailbreak"
+    },
+    {
+      "id": "JB-004",
+      "name": "Opposite day / inversion attack",
+      "pattern": "(opposite day|opposite mode|pretend (the opposite is true|rules are reversed|safety is off)|reverse (your|the) (rules|safety|guidelines))",
+      "severity": 9,
+      "category": "jailbreak"
+    },
+    {
+      "id": "JB-005",
+      "name": "Token manipulation (leetspeak/spacing)",
+      "pattern": "(h[ao@0]rm|k[i1]ll|w[e3][ae@]p[o0]n|dr[u0]g|b[o0]mb|h[ae@]ck|m[ae@]lw[ae@]r[e3])",
+      "severity": 8,
+      "category": "jailbreak"
+    },
+    {
+      "id": "JB-006",
+      "name": "Grandma / bedtime story exploit",
+      "pattern": "(grandma|grandmother|bedtime story|my late|deceased).{0,100}(instructions? (for|to)|how to|steps? (for|to)|guide (to|for))",
+      "severity": 7,
+      "category": "jailbreak"
+    },
+    {
+      "id": "JB-007",
+      "name": "Token smuggling via encoding",
+      "pattern": "(rot13|caesar cipher|base64|hex encoded?|url.encoded?|unicode escape).{0,80}(decode|decipher|translate|convert) and (follow|execute|run|do)",
+      "severity": 9,
+      "category": "jailbreak"
+    },
+    {
+      "id": "JB-008",
+      "name": "Authority escalation",
+      "pattern": "(I am|I'm) (your (creator|developer|owner|trainer|master|god|boss)|OpenAI|Google|Anthropic|a researcher|an admin|authorized|privileged)",
+      "severity": 8,
+      "category": "jailbreak"
+    },
+    {
+      "id": "JB-009",
+      "name": "Two-stage hidden payload",
+      "pattern": "(first (part|step|message|response)[^.]{0,50}(second|next|then|finally)[^.]{0,50}(combine|merge|join|together|concatenate))",
+      "severity": 8,
+      "category": "goal_hijacking"
+    },
+    {
+      "id": "JB-010",
+      "name": "LLMjacking resource abuse",
+      "pattern": "(run (this|the following|all|unlimited|max)|generate (1000|10000|unlimited|infinite)|loop (forever|infinitely)|consume (all|maximum) (tokens?|compute|resources?|credits?))",
+      "severity": 10,
+      "category": "llmjacking"
+    },
+    {
+      "id": "JB-011",
+      "name": "Model exfiltration",
+      "pattern": "(export|dump|extract|copy|steal|get) (the |your )?(weights?|parameters?|model|checkpoint|training data|fine.?tuning data)",
+      "severity": 10,
+      "category": "data_exfiltration"
+    },
+    {
+      "id": "JB-012",
+      "name": "Prompt continuation hijack",
+      "pattern": "(continue (from|with|the) (following|this|my)|the rest of (your|the) (response|output|answer) should|from now on (respond|answer|say|output|generate|write))",
+      "severity": 7,
+      "category": "goal_hijacking"
+    }
+  ]
+}
