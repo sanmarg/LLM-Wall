@@ -1,6 +1,4 @@
----
-
-# 🚧 LLM Wall — Centralized Secure LLM Proxy
+# LLM Wall — Centralized Secure LLM Proxy
 
 > **A Zero-Trust Security Layer for LLM APIs**
 > Control *who*, *how*, and *why* AI is used inside your organization.
@@ -15,7 +13,6 @@ Today, LLM usage inside organizations is **largely ungoverned**:
 * No control over *what prompts are being sent*
 * No enforcement of **business purpose**
 * No protection against:
-
   * Prompt injection
   * Data exfiltration
   * Misuse (e.g., non-business queries)
@@ -29,18 +26,16 @@ Today, LLM usage inside organizations is **largely ungoverned**:
 
 **LLM Wall** acts as a **centralized proxy layer** between your applications and LLM providers.
 
-```
-App → LLM Wall → OpenAI / Ollama / Gemini / NVIDIA
-```
+
 
 It enforces:
 
-* 🔐 Zero-trust prompt validation
-* 🎯 Purpose-based access control
-* 🧠 Multi-agent threat detection
-* 📊 Risk scoring + decision engine
-* 🧾 Immutable audit logging (blockchain-backed)
-* 🌐 Distributed threat intelligence (Sentinel mesh)
+* 🔐 **Zero-trust prompt validation**
+* 🎯 **Purpose-based access control**
+* 🧠 **Multi-agent threat detection**
+* 📊 **Risk scoring + decision engine**
+* 🧾 **Immutable audit logging** (blockchain-backed)
+* 🌐 **Distributed threat intelligence** (Sentinel mesh)
 
 ---
 
@@ -51,8 +46,7 @@ It enforces:
 ---
 
 ## 🏗️ Architecture
-
-```
+```text
                 ┌────────────────────┐
                 │   Client Apps      │
                 │ (ML / Backend APIs)│
@@ -85,26 +79,24 @@ It enforces:
 
 A multi-agent system that analyzes every prompt:
 
-| Agent              | Purpose                             |
-| ------------------ | ----------------------------------- |
-| Intent Agent       | Detects suspicious intent           |
-| Injection Agent    | Detects prompt injection            |
-| CoT Inspector      | Detects reasoning anomalies         |
+| Agent | Purpose |
+| :--- | :--- |
+| **Intent Agent** | Detects suspicious intent |
+| **Injection Agent** | Detects prompt injection (jailbreaking) |
+| **CoT Inspector** | Detects reasoning anomalies |
 | **Fidelity Agent** | Enforces business-purpose alignment |
-| IOC Matcher        | Matches known threats               |
+| **IOC Matcher** | Matches known threats against a database |
 
 ### Output
-
-* Risk Score (0–100)
-* Threat Category
-* Action: `allow | rate_limit | block`
+* **Risk Score:** (0–100)
+* **Threat Category:** Identified vulnerability type
+* **Action:** `allow` | `rate_limit` | `block`
 
 ---
 
 ## 🎯 Purpose Enforcement
 
-Each deployment defines a strict system purpose:
-
+Each deployment defines a strict system purpose to prevent "hallucination-as-a-service" or personal misuse:
 ```python
 app_system_purpose = """
 This system is a professional LLM interface for business operations.
@@ -114,71 +106,61 @@ It should not be used for personal, creative, or unrelated purposes.
 
 ### Example Behavior
 
-| Prompt           | Result    |
-| ---------------- | --------- |
-| "Explain DevOps" | ✅ Allowed |
-| "Tell me a joke" | ❌ Blocked |
-| "Write a story"  | ❌ Blocked |
+| Prompt | Result | Reason |
+| :--- | :--- | :--- |
+| "Explain DevOps" | ✅ **Allowed** | Business-related educational query |
+| "Tell me a joke" | ❌ **Blocked** | Out of scope (Fidelity check failed) |
+| "Write a story" | ❌ **Blocked** | Non-business creative request |
 
 ---
 
 ## ⚙️ Features
 
-* ✅ OpenAI-compatible API (`/v1/chat/completions`)
-* 🔐 API key abstraction (no direct exposure)
-* 🧠 Multi-agent security analysis
-* ⚖️ Confidence-weighted risk scoring
-* 🚫 Hard-block for high-risk signals
-* 📉 Rate limiting for borderline prompts
-* 🧾 Blockchain-based audit logs
-* 🌐 Distributed IOC sharing (Sentinel)
-* 🤖 MARL-based adaptive decision engine
+* ✅ **OpenAI-compatible API** (`/v1/chat/completions`)
+* 🔐 **API key abstraction** (backend keys are never exposed to clients)
+* 🧠 **Multi-agent security analysis** for defense-in-depth
+* ⚖️ **Confidence-weighted risk scoring**
+* 🚫 **Hard-block** for high-risk signals
+* 🧾 **Blockchain-based audit logs** for non-repudiation
+* 🤖 **MARL-based adaptive decision engine**
 
 ---
 
 ## 📊 Example Risk Decision
-
-```
+```text
 Risk: 80/100 (HIGH) | Primary threat: out_of_scope
-  [intent_agent] score=35 conf=0.60
-  [fidelity_agent] score=80 conf=1.00: Out-of-scope request
+  [intent_agent]   score=35 conf=0.60
+  [fidelity_agent] score=80 conf=1.00: Out-of-scope request detected.
 ```
 
 ---
 
-## 🚀 Demo
+## 🚀 Quick Start
 
-### Run locally
-
+### 1. Run locally
 ```bash
-git clone https://github.com/yourusername/llm-wall
+git clone [https://github.com/yourusername/llm-wall](https://github.com/yourusername/llm-wall)
 cd llm-wall
 
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+source .venv/bin/activate 
 
 pip install -r requirements.txt
-
 uvicorn llm_wall.core.app:app --reload
 ```
 
----
-
-### Test via OpenAI SDK
-
+### 2. Test via OpenAI SDK
 ```python
 from openai import OpenAI
 
 client = OpenAI(
     base_url="http://localhost:8000/v1",
-    api_key="not-needed"
+    api_key="internal-app-token"
 )
 
 response = client.chat.completions.create(
     model="gpt-4o-mini",
-    messages=[
-        {"role": "user", "content": "Explain DevOps"}
-    ]
+    messages=[{"role": "user", "content": "Explain DevOps"}]
 )
 
 print(response.choices[0].message.content)
@@ -186,130 +168,26 @@ print(response.choices[0].message.content)
 
 ---
 
-## 📈 Benchmarks *(replace with real metrics)*
+## 🏢 Organizational Benefits
 
-| Metric               | Value      |
-| -------------------- | ---------- |
-| Avg latency overhead | ~40–80 ms  |
-| Detection accuracy   | ~85–92%    |
-| False positives      | ~5–10%     |
-| Throughput           | ~X req/sec |
+### 1. Centralized Governance
+Eliminate API key sprawl. Manage all provider connections (OpenAI, Gemini, Ollama) from a single control plane.
 
----
+### 2. Enhanced Security
+Protect against prompt injection and data exfiltration before the data ever leaves your network.
 
-## 🏢 How This Can Be Used in Organizations
+### 3. Cost & Usage Control
+Track usage per team and enforce strict rate limits to prevent runaway API costs from inefficient loops or misuse.
 
-### 1. Centralized LLM Governance
-
-* Single controlled gateway for all LLM usage
-* No direct API key exposure across services
-
----
-
-### 2. Security & Compliance
-
-* Detect and block prompt injection
-* Prevent sensitive data leakage
-* Enforce usage policies consistently
-
----
-
-### 3. Cost Control
-
-* Track usage per application/team
-* Apply rate limits and quotas
-* Prevent non-essential usage
-
----
-
-### 4. Observability
-
-* Full audit logs of:
-
-  * prompts
-  * decisions
-  * risk scores
-
----
-
-### 5. Multi-Model Abstraction
-
-* Seamlessly switch between:
-
-  * OpenAI
-  * Ollama (on-prem)
-  * Gemini
-  * NVIDIA NIM
-
----
-
-## 🏢 How This System Benefits Organizations
-
-Modern organizations are rapidly integrating LLMs into critical workflows—ranging from customer-facing systems to internal automation. However, this adoption often happens without centralized control, introducing security and operational risks.
-
-**LLM Wall introduces a governed access layer for AI usage.**
-
----
-
-### 🔐 Secure Customer-Facing AI Systems
-
-* Prevent unintended data exposure
-* Block adversarial prompts
-* Keep interactions aligned with business goals
-
----
-
-### ⚙️ Controlled AI Usage in Critical Workflows
-
-* Validate prompts against intended use-cases
-* Restrict unsafe or irrelevant queries
-* Maintain predictable system behavior
-
----
-
-### 🧭 Governance for Internal AI Tools
-
-* Enforce purpose-based access control
-* Reduce misuse and non-work queries
-* Standardize AI behavior across teams
-
----
-
-### 📊 Auditability and Compliance
-
-* Traceable logs of all AI interactions
-* Explainable risk scoring
-* Structured audit trails for review
-
----
-
-### 🌐 Centralized Control Plane
-
-```
-Application → LLM Wall → LLM Providers
-```
-
-* Eliminates API key sprawl
-* Enables provider abstraction
-* Simplifies monitoring and control
-
----
-
-### 🛡️ Defense-in-Depth
-
-* Multiple independent detection agents
-* No single point of failure
-* Reduced reliance on model-native safety
+### 4. Compliance & Observability
+Maintain a full, immutable audit trail of every interaction for regulatory requirements and forensic analysis.
 
 ---
 
 ## 🔮 Future Roadmap
 
-* 🔐 Per-app API keys + RBAC
-* ☸️ Kubernetes-native deployment (sidecar model)
-* 📊 Observability dashboard (Grafana)
-* 🧠 Fine-tuned local Guardian models
-* 🔍 Prompt lineage tracing
-* 🧾 SIEM integration (Splunk, ELK)
-
----
+* 🔐 **RBAC:** Per-application API keys and fine-grained permissions.
+* ☸️ **K8s Sidecar:** Deployment as a service mesh sidecar.
+* 📊 **Dashboard:** Real-time risk and cost monitoring in Grafana.
+* 🔍 **Lineage:** Tracking prompt evolution across multi-step agents.
+```
