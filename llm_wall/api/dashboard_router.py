@@ -14,6 +14,8 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 
 from llm_wall.a2a.bus import get_bus
+from llm_wall.coral.engine import get_coral_engine
+from llm_wall.coral.investigator import get_investigator
 from llm_wall.guardian.engine import get_guardian_engine
 from llm_wall.ledger.node import get_ledger_node
 from llm_wall.marl.engine import get_marl_engine
@@ -111,6 +113,8 @@ async def stream_events() -> StreamingResponse:
             ledger = get_ledger_node()
             marl = get_marl_engine()
             bus = get_bus()
+            investigator = get_investigator()
+            coral = get_coral_engine()
             data = {
                 "sentinel_iocs": sentinel.get_status()["ioc_stats"][
                     "total_iocs"
@@ -118,6 +122,12 @@ async def stream_events() -> StreamingResponse:
                 "chain_height": ledger.get_stats()["height"],
                 "marl_decisions": marl.get_status()["decision_count"],
                 "bus_published": bus.stats()["total_published"],
+                "coral_investigations": investigator.stats()[
+                    "investigation_count"
+                ],
+                "coral_queries": coral.stats()["sql_queries"],
+                "coral_sources": coral.stats()["source_count"],
+                "coral_available": coral.stats()["available"],
                 "recent_threats": [
                     m.model_dump(mode="json")
                     for m in bus.get_recent_messages(limit=5)

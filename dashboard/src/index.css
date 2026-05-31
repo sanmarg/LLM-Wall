@@ -617,3 +617,65 @@ body {
 .info-row:last-child { border-bottom: none; }
 .info-key { color: var(--color-text-muted); }
 .info-val { font-family: var(--font-mono); color: var(--color-text-primary); font-size: 12px; }
+
+/* Card section */
+.card-section { padding: 12px; }
+
+/* Input */
+.input {
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  padding: 8px 12px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input:focus { border-color: var(--color-accent); }
+
+/* Button sm */
+.btn-sm {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.btn-sm:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+/* Tag danger */
+.tag-danger { border-color: var(--color-danger); color: var(--color-danger); }
+
+/* Text utilities */
+.text-xs { font-size: 11px; }
+.text-sm { font-size: 13px; }
+.text-muted { color: var(--color-text-muted); }
+.text-accent { color: var(--color-accent); }
+.text-danger { color: var(--color-danger); }
+.text-primary-color { color: var(--color-primary); }
+
+/* Honeypot / Policy cards */
+.policy-card {
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+/* Insight bar */
+.insight-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--color-bg-base);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  margin-top: 8px;
+}

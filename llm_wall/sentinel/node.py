@@ -16,6 +16,8 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
+import asyncio
+
 from llm_wall.a2a.bus import TOPIC_IOC_NEW, get_bus
 from llm_wall.config import get_settings
 from llm_wall.models import A2AMessage, IOC, ThreatCategory, ThreatReport
@@ -233,6 +235,79 @@ class SentinelNode:
     # ------------------------------------------------------------------
     # Background loop
     # ------------------------------------------------------------------
+
+    async def proactive_ioc_generation(self) -> int:
+        """Queries Coral for OSV vulnerabilities and GitHub deps to auto-create IOCs.
+
+        Uses Coral's OSV community source to fetch recent CVEs and
+        cross-references against GitHub dependency manifests. Any
+        vulnerable dependency found becomes a Sentinel IOC.
+
+        Returns:
+            Number of new IOCs created.
+        """
+        try:
+            from llm_wall.coral.engine import get_coral_engine  # pylint: disable=import-outside-toplevel
+            coral = get_coral_engine()
+            new_count = 0
+
+            # Check if OSV source is available
+            osv_query = "SELECT id, summary, severity, ecosystem, package_name FROM osv.vulnerabilities ORDER BY published_at DESC LIMIT 20"
+            vulns = await coral.sql(osv_query)
+            if not vulns:
+                return 0
+
+            # Try to get GitHub deps (if source configured)
+            deps_query = "SELECT full_name, dependency_manifests FROM github.repos WHERE dependency_manifests IS NOT NULL LIMIT 10"
+            repos = await coral.sql(deps_query)
+
+            vuln_packages = {}
+            for v in vulns:
+                pkg = v.get("package_name", "").lower()
+                eco = v.get("ecosystem", "")
+                if pkg:
+                    vuln_packages.setdefault(pkg, []).append(v)
+
+            if not vuln_packages:
+                return 0
+
+            bus = get_bus()
+            for pkg_name, vs in vuln_packages.items():
+                if len(pkg_name) < 3:
+                    continue
+                top = vs[0]
+                ioc = IOC(
+                    category=ThreatCategory.DATA_EXFILTRATION,
+                    pattern=f"coral:osv:{pkg_name}",
+                    severity=min(10, top.get("severity", 6)),
+                    source_node=f"{self._node_id}/coral-osv",
+                    ttl_hours=72,
+                )
+                if self._ioc_store.add(ioc):
+                    new_count += 1
+
+            if new_count:
+                asyncio.ensure_future(
+                    bus.publish(
+                        A2AMessage(
+                            sender_id=self._node_id,
+                            topic=TOPIC_IOC_NEW,
+                            payload={
+                                "count": new_count,
+                                "source": "coral_osv_proactive",
+                            },
+                            priority=5,
+                        )
+                    )
+                )
+                logger.info(
+                    "Proactive IOC generation: %d new IOCs from Coral/OSV",
+                    new_count,
+                )
+            return new_count
+        except Exception as exc:
+            logger.debug("Proactive IOC generation skipped: %s", exc)
+            return 0
 
     async def _gossip_loop(self) -> None:
         """Runs the periodic gossip broadcast loop.

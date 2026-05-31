@@ -260,6 +260,55 @@ class BlockData(BaseModel):
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Coral Investigation Models
+# ---------------------------------------------------------------------------
+
+
+class CoralSnapshot(BaseModel):
+    """A point-in-time snapshot of system state from Coral queries."""
+
+    snapshot_id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        description="Unique snapshot identifier.",
+    )
+    request_id: str = Field(description="Originating LLM request ID.")
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+    )
+    coral_results: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Coral SQL query results keyed by query name.",
+    )
+    errors: list[str] = Field(
+        default_factory=list,
+        description="Any errors from Coral queries.",
+    )
+
+
+class CoralInvestigationReport(BaseModel):
+    """Full investigation report generated from Coral cross-source queries."""
+
+    investigation_id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        description="Unique investigation identifier.",
+    )
+    request_id: str = Field(description="Originating LLM request ID.")
+    risk_score: int = Field(ge=0, le=100)
+    decision: str = Field(description="Final decision: allow/block/quarantine/manual.")
+    coral_results: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Coral SQL query results.",
+    )
+    errors: list[str] = Field(
+        default_factory=list,
+        description="Errors encountered during investigation.",
+    )
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+    )
+
+
 class MCPToolCall(BaseModel):
     """A tool invocation request intercepted by the MCP broker."""
 

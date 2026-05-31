@@ -25,12 +25,13 @@ from llm_wall.marl.environment import (
     ACTION_TO_THREAT,
     NUM_AGENTS,
     StateVector,
+    THREAT_TO_ACTION,
     compute_reward,
     encode_state,
 )
 from llm_wall.marl.policies import EpsilonGreedyPolicy
 from llm_wall.marl.q_table import QTable
-from llm_wall.models import Provider, ThreatAction, ThreatReport
+from llm_wall.models import Provider, ThreatAction, ThreatCategory, ThreatReport
 
 logger = logging.getLogger(__name__)
 
@@ -191,6 +192,74 @@ class MARLEngine:
                 for name in _AGENT_NAMES
             ],
         }
+
+    async def record_coral_reward(
+        self,
+        state: StateVector,
+        action: ThreatAction,
+        risk_score: int = 50,
+    ) -> None:
+        """Records a reward informed by Coral data for online Q-learning.
+
+        Uses Coral to query Datadog/Sentry for actual business impact
+        after a security decision, providing a richer reward signal
+        than the heuristic default.
+
+        Coral reward logic:
+        - If action was BLOCK and Coral finds no correlating incidents → +1.0 (good block)
+        - If action was BLOCK and Coral finds correlating incidents → -0.5 (over-blocked)
+        - If action was ALLOW and Coral finds correlating incidents → -1.0 (missed threat)
+        - If action was ALLOW and Coral finds no correlating incidents → +0.5 (good allow)
+        - Fallback: use heuristic compute_reward
+        """
+        try:
+            from llm_wall.coral.engine import get_coral_engine  # pylint: disable=import-outside-toplevel
+            coral = get_coral_engine()
+
+            # Query Sentry for recent errors and Datadog for anomalies
+            sentry_rows = await coral.sql(
+                "SELECT count, level FROM sentry.issues WHERE level IN ('fatal','error') AND first_seen >= datetime('now', '-1 hour') ORDER BY first_seen DESC LIMIT 5"
+            )
+            dd_rows = await coral.sql(
+                "SELECT id, status, severity FROM datadog.incidents WHERE status = 'active' AND last_status_change >= datetime('now', '-1 hour') ORDER BY last_status_change DESC LIMIT 5"
+            )
+
+            has_sentry_errors = any(
+                r.get("level") in ("fatal", "error") for r in sentry_rows
+            )
+            has_dd_incidents = len(dd_rows) > 0
+            actual_threat = has_sentry_errors or has_dd_incidents
+
+            if action == ThreatAction.ALLOW and actual_threat:
+                coral_reward = -1.0
+            elif action == ThreatAction.BLOCK and actual_threat:
+                coral_reward = -0.5
+            elif action == ThreatAction.BLOCK and not actual_threat:
+                coral_reward = 1.0
+            elif action == ThreatAction.ALLOW and not actual_threat:
+                coral_reward = 0.5
+            else:
+                coral_reward = compute_reward(
+                    THREAT_TO_ACTION.get(action, 0), actual_threat, risk_score
+                )
+
+            for name in _AGENT_NAMES:
+                self._agents[name].update(
+                    state=state,
+                    action=THREAT_TO_ACTION.get(action, 0),
+                    reward=coral_reward,
+                    next_state=None,
+                )
+            logger.info(
+                "MARL Coral reward: action=%s threat=%s reward=%.2f (sentry=%d dd=%d)",
+                action.value,
+                actual_threat,
+                coral_reward,
+                len(sentry_rows),
+                len(dd_rows),
+            )
+        except Exception as exc:
+            logger.debug("MARL Coral reward unavailable (fallback): %s", exc)
 
     def get_heatmap(self, agent_name: str) -> list[dict[str, Any]]:
         """Returns Q-table heatmap data for a specific agent.

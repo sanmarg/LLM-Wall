@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Shield, Activity, Link2, Cpu, Database, Radio, BarChart2, ChevronRight, Zap
+  Shield, Activity, Link2, Cpu, Database, Radio, BarChart2, ChevronRight, Search, Zap
 } from 'lucide-react';
 import ThreatFeed from './components/ThreatFeed.jsx';
 import GuardianStatus from './components/GuardianStatus.jsx';
@@ -14,17 +14,19 @@ import SentinelMesh from './components/SentinelMesh.jsx';
 import MARLPolicy from './components/MARLPolicy.jsx';
 import ProviderHealth from './components/ProviderHealth.jsx';
 import PatternEvolution from './components/PatternEvolution.jsx';
+import CoralInvestigation from './components/CoralInvestigation.jsx';
 
 /** @type {Array<{id: string, label: string, icon: JSX.Element}>} */
 const NAV_ITEMS = [
-  { id: 'overview',    label: 'Overview',      icon: <Activity size={16} /> },
-  { id: 'threats',     label: 'Threat Feed',   icon: <Shield size={16} /> },
-  { id: 'guardian',    label: 'Guardian',       icon: <Cpu size={16} /> },
-  { id: 'patterns',    label: 'Patterns',       icon: <Zap size={16} /> },
-  { id: 'ledger',      label: 'Blockchain',     icon: <Link2 size={16} /> },
-  { id: 'sentinel',    label: 'Sentinel Mesh',  icon: <Radio size={16} /> },
-  { id: 'marl',        label: 'MARL Policy',    icon: <BarChart2 size={16} /> },
-  { id: 'providers',   label: 'Providers',      icon: <Database size={16} /> },
+  { id: 'overview',    label: 'Overview',        icon: <Activity size={16} /> },
+  { id: 'threats',     label: 'Threat Feed',     icon: <Shield size={16} /> },
+  { id: 'guardian',    label: 'Guardian',         icon: <Cpu size={16} /> },
+  { id: 'patterns',    label: 'Patterns',         icon: <Zap size={16} /> },
+  { id: 'coral',       label: 'Coral Invest.',     icon: <Search size={16} /> },
+  { id: 'ledger',      label: 'Blockchain',       icon: <Link2 size={16} /> },
+  { id: 'sentinel',    label: 'Sentinel Mesh',    icon: <Radio size={16} /> },
+  { id: 'marl',        label: 'MARL Policy',      icon: <BarChart2 size={16} /> },
+  { id: 'providers',   label: 'Providers',        icon: <Database size={16} /> },
 ];
 
 /**
@@ -130,6 +132,7 @@ export default function App() {
         {activeView === 'threats' && <ThreatFeed />}
         {activeView === 'guardian' && <GuardianStatus />}
         {activeView === 'patterns' && <PatternEvolution />}
+        {activeView === 'coral' && <CoralInvestigation />}
         {activeView === 'ledger' && <BlockchainLedger />}
         {activeView === 'sentinel' && <SentinelMesh />}
         {activeView === 'marl' && <MARLPolicy />}
@@ -145,6 +148,7 @@ export default function App() {
  * @returns {JSX.Element}
  */
 function OverviewPage({ liveData, setActiveView }) {
+  const coralOnline = liveData?.coral_available ?? false;
   const stats = [
     {
       label:    'Chain Height',
@@ -161,11 +165,11 @@ function OverviewPage({ liveData, setActiveView }) {
       view:     'sentinel',
     },
     {
-      label:    'MARL Decisions',
-      value:    liveData?.marl_decisions ?? 0,
-      sub:      'Adaptive defense actions',
-      cls:      'accent',
-      view:     'marl',
+      label:    'Coral Investig.',
+      value:    liveData?.coral_investigations ?? 0,
+      sub:      coralOnline ? `${liveData?.coral_sources ?? 0} sources · ${liveData?.coral_queries ?? 0} queries` : 'Binary not found',
+      cls:      coralOnline ? 'accent' : 'danger',
+      view:     'coral',
     },
     {
       label:    'Bus Messages',
@@ -204,10 +208,15 @@ function OverviewPage({ liveData, setActiveView }) {
         ))}
       </div>
 
-      {/* Two-column section: Live Threats + Quick Actions */}
+      {/* Two-column section: Live Threats + Blockchain */}
       <div className="section-grid">
         <ThreatFeed compact />
         <BlockchainLedger compact />
+      </div>
+
+      {/* Coral Investigation section */}
+      <div className="section-grid" style={{ marginTop: '16px' }}>
+        <CoralInvestigation compact />
       </div>
     </>
   );

@@ -16,7 +16,16 @@ from typing import Any
 
 from llm_wall.config import get_settings
 from llm_wall.ledger.blockchain import Blockchain
-from llm_wall.models import AuditEvent, LLMRequest, Provider, ThreatReport
+from llm_wall.models import (
+    AuditEvent,
+    CoralInvestigationReport,
+    CoralSnapshot,
+    LLMRequest,
+    Provider,
+    ThreatAction,
+    ThreatCategory,
+    ThreatReport,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -149,6 +158,34 @@ class LedgerNode:
             Proof dict from Blockchain.get_merkle_proof().
         """
         return self._chain.get_merkle_proof(block_index, event_id)
+
+    def record_investigation(self, report: CoralInvestigationReport) -> None:
+        """Records a Coral investigation report on the blockchain.
+
+        Args:
+            report: CoralInvestigationReport from the investigator.
+        """
+        event = AuditEvent(
+            request_id=report.request_id,
+            action=ThreatAction.ALLOW,
+            risk_score=report.risk_score,
+            primary_category=ThreatCategory.BENIGN,
+            provider=Provider.OLLAMA,
+            model="coral_investigation",
+            actor_name="incident_investigator",
+            prompt_snippet=f"Coral investigation: {report.investigation_id}",
+            signals_summary=[
+                f"queries:{len(report.coral_results)}",
+                f"errors:{len(report.errors)}",
+            ],
+        )
+        self._chain.add_event(event)
+        self._record_count += 1
+        logger.debug(
+            "Investigation recorded on ledger: investigation=%s request=%s",
+            report.investigation_id[:8],
+            report.request_id[:8],
+        )
 
     def get_stats(self) -> dict[str, Any]:
         """Returns ledger statistics for the dashboard.

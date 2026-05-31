@@ -194,12 +194,46 @@ class MARLSettings(BaseSettings):
     )
 
 
+class CoralSettings(BaseSettings):
+    """Settings for the Coral integration subsystem."""
+
+    model_config = SettingsConfigDict(extra="ignore")
+
+    coral_binary_path: str = Field(
+        default="",
+        description="Path to coral binary; auto-detected if empty.",
+    )
+    coral_config_dir: str = Field(
+        default="",
+        description="Override Coral config directory.",
+    )
+    coral_investigate_on_threat: bool = Field(
+        default=True,
+        description="Auto-investigate threats using Coral.",
+    )
+    coral_investigate_min_risk: int = Field(
+        default=40,
+        ge=0,
+        le=100,
+        description="Minimum risk score to trigger Coral investigation.",
+    )
+    coral_pattern_hunt_interval_hours: float = Field(
+        default=12.0,
+        description="Interval between Coral-powered pattern hunts.",
+    )
+    coral_honeypot_interval_hours: float = Field(
+        default=24.0,
+        description="Interval between honeypot generation cycles.",
+    )
+
+
 class Settings(
     LLMProviderSettings,
     GuardianSettings,
     SentinelSettings,
     LedgerSettings,
     MARLSettings,
+    CoralSettings,
 ):
     """Aggregate application settings loaded from environment / .env.
 

@@ -262,4 +262,75 @@ def _register_builtin_tools(broker: MCPBroker) -> None:
         risk_level="low",
         description="Returns service health status.",
     )
-    logger.info("Built-in MCP tools registered.")
+
+    # ── Coral MCP Tools ──────────────────────────────────────────────
+
+    async def coral_sql_tool(query: str = "") -> list[dict[str, object]] | str:
+        """Executes a read-only SQL query against Coral sources.
+        
+        Query data sources registered in Coral (GitHub, Sentry, Slack,
+        Datadog, etc.) using SQL. Supports cross-source JOINs.
+        Always read-only.
+        
+        Args:
+            query: SQL query string (e.g. "SELECT * FROM github.issues LIMIT 10")
+        
+        Returns:
+            List of result rows as dicts.
+        """
+        from llm_wall.coral.engine import get_coral_engine  # pylint: disable=import-outside-toplevel
+        engine = get_coral_engine()
+        rows = await engine.sql(query)
+        return rows if rows else [{"_note": "No results or Coral not configured. Install sources with: coral source add <name>"}]
+
+    async def coral_list_catalog_tool(schema: str = "") -> list[dict[str, str]]:
+        """Lists available Coral database tables and table functions.
+        
+        Args:
+            schema: Optional schema name to filter by (e.g. "github").
+        
+        Returns:
+            List of catalog entries.
+        """
+        from llm_wall.coral.engine import get_coral_engine  # pylint: disable=import-outside-toplevel
+        engine = get_coral_engine()
+        q = "SELECT schema_name, table_name, description FROM coral.tables"
+        if schema:
+            q += f" WHERE schema_name = '{schema}'"
+        q += " LIMIT 50"
+        return await engine.sql(q)
+
+    async def coral_search_catalog_tool(pattern: str = "") -> list[dict[str, str]]:
+        """Searches Coral catalog metadata with a regex pattern.
+        
+        Args:
+            pattern: Rust regex pattern to search catalog with.
+        
+        Returns:
+            List of matching catalog entries.
+        """
+        from llm_wall.coral.engine import get_coral_engine  # pylint: disable=import-outside-toplevel
+        engine = get_coral_engine()
+        q = f"SELECT schema_name, table_name, description FROM coral.tables WHERE table_name ~* '{pattern}' OR schema_name ~* '{pattern}' LIMIT 50"
+        return await engine.sql(q)
+
+    broker.register_tool(
+        "coral_sql",
+        coral_sql_tool,
+        risk_level="medium",
+        description="Execute read-only SQL queries against Coral data sources (GitHub, Sentry, Slack, etc.).",
+    )
+    broker.register_tool(
+        "coral_list_catalog",
+        coral_list_catalog_tool,
+        risk_level="low",
+        description="List available Coral database tables and schemas.",
+    )
+    broker.register_tool(
+        "coral_search_catalog",
+        coral_search_catalog_tool,
+        risk_level="low",
+        description="Search Coral catalog metadata with a regex pattern.",
+    )
+
+    logger.info("Built-in MCP tools registered (including Coral tools).")

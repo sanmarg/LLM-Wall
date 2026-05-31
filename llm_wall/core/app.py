@@ -22,10 +22,15 @@ from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
+from llm_wall.api.coral_router import router as coral_router
 from llm_wall.api.dashboard_router import router as dashboard_router
 from llm_wall.api.ledger_router import router as ledger_router
 from llm_wall.api.patterns_router import router as patterns_router
 from llm_wall.api.sentinel_router import router as sentinel_router
+from llm_wall.coral.engine import get_coral_engine
+from llm_wall.coral.honeypot import run_honeypot_cycle
+from llm_wall.coral.investigator import get_investigator
+from llm_wall.coral.pattern_hunter import get_pattern_hunter
 from llm_wall.guardian.pattern_updater import get_pattern_updater
 from llm_wall.config import get_settings
 from llm_wall.core.middleware import (
@@ -92,11 +97,31 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     )
     await pattern_updater.start()
 
+    # ── Coral Subsystems ──────────────────────────────────────────
+    coral_engine = get_coral_engine()
+    coral_ok = await coral_engine.health_check()
+    if coral_ok:
+        logger.info("Coral engine is available: %s", coral_engine.stats())
+
+    if cfg.coral_investigate_on_threat:
+        investigator = get_investigator()
+        await investigator.start()
+        logger.info("Coral IncidentInvestigator started.")
+
+    hunter = get_pattern_hunter()
+    logger.info("Coral PatternHunter ready.")
+
+    if cfg.app_env == "development":
+        logger.info("(Coral honeypot / policy generation available via API)")
+
     logger.info("All subsystems started. Ready to intercept LLM traffic.")
     yield
 
     # Shutdown
     logger.info("LLM Wall shutting down…")
+    if cfg.coral_investigate_on_threat:
+        investigator = get_investigator()
+        await investigator.stop()
     await pattern_updater.stop()
     await sentinel.stop()
     await ledger.stop()
@@ -136,6 +161,7 @@ def create_app() -> FastAPI:
 
     # Routers
     app.include_router(proxy_router)
+    app.include_router(coral_router)
     app.include_router(dashboard_router)
     app.include_router(sentinel_router)
     app.include_router(ledger_router)
