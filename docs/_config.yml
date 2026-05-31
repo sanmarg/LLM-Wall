@@ -1,0 +1,11 @@
+title: LLM Wall
+description: Zero-Trust Security Layer for LLM APIs
+baseurl: /LLM-Wall
+url: https://sanmarg.github.io
+theme: null
+markdown: kramdown
+plugins: []
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock

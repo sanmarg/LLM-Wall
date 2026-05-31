@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sanmarg.github.io/LLM-Wall/sitemap.xml

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Wall - Zero-Trust Security Layer for LLM APIs</title>
+    <meta name="description" content="LLM Wall is a centralized zero-trust security proxy for LLM APIs with multi-agent threat detection, immutable audit logging, and Coral-powered cross-source investigation.">
+    <meta name="keywords" content="LLM, Security, Proxy, Zero-Trust, AI, Prompt Injection, Coral, FastAPI, Python">
+    <meta name="author" content="Sanmarg Paranjpe">
+    <meta property="og:title" content="LLM Wall - Zero-Trust LLM Security Proxy">
+    <meta property="og:description" content="Centralized security layer for LLM APIs with multi-agent threat detection and Coral integration">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sanmarg.github.io/LLM-Wall">
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%236366f1'>🧱</text></svg>">
+
+    <!-- PWA & Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%236366f1' rx='39'/><text y='135' font-size='100' fill='white' text-anchor='middle' x='90'>🧱</text></svg>">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#6366f1">
+    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-config" content="browserconfig.xml">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span class="logo-icon">🧱</span>
+                <span class="logo-text">LLM Wall</span>
+            </div>
+            <button class="mobile-toggle" id="mobileToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#coral" class="nav-link">Coral</a></li>
+                <li><a href="#architecture" class="nav-link">Architecture</a></li>
+                <li><a href="#quickstart" class="nav-link">Quick Start</a></li>
+                <li><a href="#contributors" class="nav-link">Contributors</a></li>
+                <li><a href="https://github.com/sanmarg/LLM-Wall" target="_blank" class="nav-link cta">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Zero-Trust Security</span>
+                    <span class="gradient-text-alt">for LLM APIs</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Centralized proxy layer that controls who, how, and why AI is used inside your organization. Multi-agent threat detection, immutable audit trails, and Coral-powered cross-source investigation.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#quickstart" class="btn btn-primary">Get Started</a>
+                    <a href="https://github.com/sanmarg/LLM-Wall" target="_blank" class="btn btn-secondary">View on GitHub</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Security Agents</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Zero-Trust</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">Open Source</span>
+                        <span class="stat-label">MIT License</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="shield-animation">
+                    <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M100 20 L180 60 L180 140 C180 180 140 210 100 220 C60 210 20 180 20 140 L20 60 Z" fill="none" stroke="url(#shieldGradient)" stroke-width="2" class="shield-border"/>
+                        <text x="100" y="80" font-size="40" text-anchor="middle" fill="#6366f1" class="shield-icon">🧱</text>
+                        <line x1="50" y1="120" x2="150" y2="120" stroke="#e5e7eb" stroke-width="1"/>
+                        <line x1="50" y1="140" x2="150" y2="140" stroke="#e5e7eb" stroke-width="1"/>
+                        <line x1="50" y1="160" x2="150" y2="160" stroke="#e5e7eb" stroke-width="1"/>
+                        <text x="100" y="195" font-size="14" text-anchor="middle" fill="#6366f1" font-weight="bold">LLM WALL</text>
+                        <defs>
+                            <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="hero-background">
+            <div class="gradient-blob blob-1"></div>
+            <div class="gradient-blob blob-2"></div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <p class="section-subtitle">Built for enterprise LLM governance</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="8" y="16" width="48" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="20" cy="32" r="3" fill="currentColor"/>
+                            <path d="M 28 28 L 36 36 M 36 28 L 28 36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M 44 24 L 52 40" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3>Multi-Agent Detection</h3>
+                    <p>5 specialized agents analyze every prompt: intent, injection, CoT, fidelity, and IOC matching for defense-in-depth security.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <path d="M 32 12 L 44 24 L 36 32 L 48 40 L 32 40 L 20 52 L 20 28 L 8 28 Z" fill="currentColor" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <h3>Zero-Trust Validation</h3>
+                    <p>Block prompt injection, jailbreaking, and data exfiltration before data ever leaves your network. Confidence-weighted risk scoring.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <g stroke="currentColor" stroke-width="2" fill="none">
+                                <rect x="12" y="12" width="40" height="40" rx="4"/>
+                                <path d="M 24 32 L 30 38 L 44 24"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3>Blockchain Audit Trail</h3>
+                    <p>Immutable ledger for every interaction. Non-repudiation, tamper-proof logging, and forensic analysis for compliance requirements.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <g stroke="currentColor" stroke-width="2" fill="none">
+                                <circle cx="32" cy="20" r="6"/>
+                                <circle cx="16" cy="44" r="6"/>
+                                <circle cx="48" cy="44" r="6"/>
+                                <line x1="32" y1="26" x2="20" y2="38"/>
+                                <line x1="32" y1="26" x2="44" y2="38"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3>Distributed Threat Intel</h3>
+                    <p>Peer-to-peer Sentinel mesh shares threat intelligence across nodes. Automatic IOC propagation and reputation scoring.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <g fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M 16 32 Q 32 16 48 32 Q 32 48 16 32"/>
+                                <circle cx="32" cy="32" r="4" fill="currentColor"/>
+                                <path d="M 32 12 L 32 8"/>
+                                <path d="M 45 19 L 48 16"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3>MARL Decision Engine</h3>
+                    <p>Multi-Agent Reinforcement Learning adapts security policies in real-time. 4 agents (gateway, tool, context, escalate) learn optimal responses.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <g fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="8" y="16" width="48" height="32" rx="4"/>
+                                <path d="M 16 28 L 24 32 L 16 36"/>
+                                <path d="M 48 28 L 40 32 L 48 36"/>
+                                <line x1="28" y1="44" x2="36" y2="44"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3>Coral Investigation</h3>
+                    <p>Cross-source SQL queries across GitHub, Sentry, Slack, PagerDuty, and Datadog. Auto-investigate threats and store results on-chain.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coral Integration Section -->
+    <section class="coral-section" id="coral">
+        <div class="container">
+            <h2 class="section-title">Built with Coral</h2>
+            <p class="section-subtitle">A Coral Bean Hackathon submission — Track 1: Enterprise Agent</p>
+
+            <div class="coral-content">
+                <div class="coral-diagram">
+                    <div class="coral-component coral-primary">
+                        <div class="coral-icon">🐚</div>
+                        <div class="coral-label">Coral SQL Engine</div>
+                        <div class="coral-desc">Query Layer</div>
+                    </div>
+                    <div class="coral-flow">
+                        <div class="coral-item">
+                            <span class="ci">🔍</span>
+                            <span class="cl">Incident<br>Investigator</span>
+                        </div>
+                        <div class="coral-item">
+                            <span class="ci">🧬</span>
+                            <span class="cl">Pattern<br>Hunter</span>
+                        </div>
+                        <div class="coral-item">
+                            <span class="ci">🍯</span>
+                            <span class="cl">Honeypot<br>Generator</span>
+                        </div>
+                        <div class="coral-item">
+                            <span class="ci">⚙️</span>
+                            <span class="cl">Policy<br>Generator</span>
+                        </div>
+                        <div class="coral-item">
+                            <span class="ci">🧩</span>
+                            <span class="cl">MCP<br>Tools</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="coral-details">
+                    <h3>Coral-Powered Subsystems</h3>
+                    <div class="coral-subsystems">
+                        <div class="coral-subsystem">
+                            <span class="cs-icon">🔍</span>
+                            <div class="cs-content">
+                                <h4>IncidentInvestigator</h4>
+                                <p>Subscribes to A2A threat bus. On detection, runs 5 parallel Coral SQL queries (GitHub PRs, Sentry errors, Slack incidents, PagerDuty, Datadog anomalies). Results stored on blockchain ledger.</p>
+                            </div>
+                        </div>
+                        <div class="coral-subsystem">
+                            <span class="cs-icon">🧬</span>
+                            <div class="cs-content">
+                                <h4>PatternHunter</h4>
+                                <p>Queries GitHub repos, Notion docs, and Slack channels via Coral for exposed prompts and internal terminology. Uses LLM to synthesize targeted regex patterns for the Guardian engine.</p>
+                            </div>
+                        </div>
+                        <div class="coral-subsystem">
+                            <span class="cs-icon">🍯</span>
+                            <div class="cs-content">
+                                <h4>Honeypot Generator</h4>
+                                <p>Reads real org data (private repo names, issues) through Coral, generates deceptive decoy prompts. Unique strings registered as Sentinel IOCs for instant attacker detection.</p>
+                            </div>
+                        </div>
+                        <div class="coral-subsystem">
+                            <span class="cs-icon">⚙️</span>
+                            <div class="cs-content">
+                                <h4>Policy Generator</h4>
+                                <p>Queries Notion (security policies), Confluence (runbooks), and GitHub (incident reports) via Coral. LLM suggests Guardian thresholds and fidelity rules tailored to your organization.</p>
+                            </div>
+                        </div>
+                        <div class="coral-subsystem">
+                            <span class="cs-icon">🧩</span>
+                            <div class="cs-content">
+                                <h4>MCP Tools</h4>
+                                <p>3 Model Context Protocol tools: <code>coral_sql</code> (ad-hoc SQL), <code>coral_list_catalog</code> (list tables/schemas), <code>coral_search_catalog</code> (full-text search).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-top: 2rem;">API Endpoints</h3>
+                    <div class="endpoints-grid">
+                        <div class="endpoint-item">
+                            <span class="ep-method">GET</span>
+                            <span class="ep-path">/api/coral/status</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">GET</span>
+                            <span class="ep-path">/api/coral/sources</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">GET</span>
+                            <span class="ep-path">/api/coral/discover</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">POST</span>
+                            <span class="ep-path">/api/coral/sql</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">GET</span>
+                            <span class="ep-path">/api/coral/investigations</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">POST</span>
+                            <span class="ep-path">/api/coral/investigations/trigger</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">GET</span>
+                            <span class="ep-path">/api/coral/investigations/:id</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">POST</span>
+                            <span class="ep-path">/api/coral/patterns/hunt</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">GET</span>
+                            <span class="ep-path">/api/coral/patterns/org</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">POST</span>
+                            <span class="ep-path">/api/coral/honeypots/generate</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">POST</span>
+                            <span class="ep-path">/api/coral/policy/generate</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <span class="ep-method">POST</span>
+                            <span class="ep-path">/api/coral/policy/apply</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="architecture" id="architecture">
+        <div class="container">
+            <h2 class="section-title">Architecture</h2>
+            <p class="section-subtitle">How LLM Wall protects your AI infrastructure</p>
+
+            <div class="architecture-content">
+                <div class="architecture-diagram">
+                    <div class="arch-row">
+                        <div class="arch-component arch-primary">
+                            <div class="arch-icon">💻</div>
+                            <div class="arch-label">Client Apps</div>
+                            <div class="arch-description">ML / Backend APIs</div>
+                        </div>
+                    </div>
+                    <div class="arch-connector">▼</div>
+                    <div class="arch-row">
+                        <div class="arch-component arch-primary">
+                            <div class="arch-icon">🧱</div>
+                            <div class="arch-label">LLM Wall</div>
+                            <div class="arch-description">FastAPI Proxy</div>
+                        </div>
+                    </div>
+                    <div class="arch-connector">▼</div>
+                    <div class="arch-flow-components">
+                        <div class="arch-component">
+                            <div class="arch-icon">🛡️</div>
+                            <div class="arch-label">Guardian</div>
+                            <div class="arch-description">Security Brain</div>
+                        </div>
+                        <div class="arch-component">
+                            <div class="arch-icon">🌐</div>
+                            <div class="arch-label">Sentinel</div>
+                            <div class="arch-description">Threat Mesh</div>
+                        </div>
+                        <div class="arch-component">
+                            <div class="arch-icon">📋</div>
+                            <div class="arch-label">Ledger</div>
+                            <div class="arch-description">Audit Chain</div>
+                        </div>
+                        <div class="arch-component">
+                            <div class="arch-icon">🐚</div>
+                            <div class="arch-label">Coral</div>
+                            <div class="arch-description">Investigation</div>
+                        </div>
+                    </div>
+                    <div class="arch-connector">▼</div>
+                    <div class="arch-flow">
+                        <div class="flow-item">
+                            <span class="flow-icon">🤖</span>
+                            <span class="flow-label">OpenAI</span>
+                        </div>
+                        <div class="flow-item">
+                            <span class="flow-icon">🦙</span>
+                            <span class="flow-label">Ollama</span>
+                        </div>
+                        <div class="flow-item">
+                            <span class="flow-icon">💎</span>
+                            <span class="flow-label">Gemini</span>
+                        </div>
+                        <div class="flow-item">
+                            <span class="flow-icon">🔷</span>
+                            <span class="flow-label">NVIDIA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="architecture-details">
+                    <h3>Key Components</h3>
+                    <ul class="component-list">
+                        <li><strong>Guardian Engine:</strong> 5-agent security system analyzing every prompt (Intent, Injection, CoT, Fidelity, IOC Matcher)</li>
+                        <li><strong>Sentinel Mesh:</strong> P2P threat intelligence network with automatic IOC propagation and reputation scoring</li>
+                        <li><strong>Blockchain Ledger:</strong> Immutable audit trail with proof-of-work mining, chain verification, and flush-to-disk persistence</li>
+                        <li><strong>MARL Engine:</strong> 4 Q-learning agents (gateway, tool, context, escalate) adapting security decisions</li>
+                        <li><strong>Coral Integration:</strong> Cross-source SQL investigations, pattern evolution, honeypot deployment, policy generation</li>
+                        <li><strong>MCP Broker:</strong> 6 Model Context Protocol tools (echo, get_time, health_check, coral_sql, coral_list_catalog, coral_search_catalog)</li>
+                    </ul>
+
+                    <h3 style="margin-top: 2rem;">Request Flow</h3>
+                    <ol class="workflow-list">
+                        <li>Client sends prompt to LLM Wall proxy endpoint</li>
+                        <li>Guardian agents analyze prompt in parallel (intent, injection, CoT, fidelity, IOC)</li>
+                        <li>Risk score computed from weighted agent confidences</li>
+                        <li>Decision: allow / rate_limit / block based on configurable thresholds</li>
+                        <li>If threat detected, Coral IncidentInvestigator runs cross-source queries</li>
+                        <li>All actions logged to blockchain ledger for audit trail</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section class="quickstart" id="quickstart">
+        <div class="container">
+            <h2 class="section-title">Quick Start</h2>
+            <p class="section-subtitle">Get up and running in 5 minutes</p>
+
+            <div class="quickstart-content">
+                <div class="quickstart-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Install Coral CLI</h4>
+                            <p>Install Coral — the SQL query layer for APIs and databases:</p>
+                            <pre><code>curl -fsSL https://coral-ai.com/install | sh
+# or: https://github.com/coral-ai/coral/releases</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Clone & Setup</h4>
+                            <p>Clone the repo and create a virtual environment:</p>
+                            <pre><code>git clone https://github.com/sanmarg/LLM-Wall
+cd LLM-Wall
+
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+source .venv/bin/activate
+
+pip install -r requirements.txt</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Start the Server</h4>
+                            <p>Launch the LLM Wall proxy server:</p>
+                            <pre><code>uvicorn llm_wall.core.app:app --reload --port 9876</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Test & Verify</h4>
+                            <p>Run the end-to-end test suite (63 tests covering all 12 Coral endpoints):</p>
+                            <pre><code>python test_e2e.py</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Open Dashboard</h4>
+                            <p>Start the React dashboard for real-time monitoring:</p>
+                            <pre><code>cd dashboard
+npm install
+npm run dev
+# Open http://localhost:9876/dashboard</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quickstart-box">
+                    <h3>📚 Documentation</h3>
+                    <p>For detailed configuration and advanced features:</p>
+                    <a href="https://github.com/sanmarg/LLM-Wall#readme" target="_blank" class="btn btn-small btn-primary">View Full Docs</a>
+
+                    <h3 style="margin-top: 2rem;">🔗 Useful Links</h3>
+                    <ul class="link-list">
+                        <li><a href="https://coral-ai.com" target="_blank">Coral AI</a></li>
+                        <li><a href="https://modelcontextprotocol.io" target="_blank">MCP Specification</a></li>
+                        <li><a href="https://github.com/sanmarg/LLM-Wall/issues" target="_blank">Issue Tracker</a></li>
+                        <li><a href="https://fastapi.tiangolo.com" target="_blank">FastAPI Docs</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section class="documentation" id="documentation">
+        <div class="container">
+            <h2 class="section-title">Documentation</h2>
+            <p class="section-subtitle">Comprehensive guides and references</p>
+
+            <div class="docs-grid">
+                <div class="doc-card">
+                    <h3>📖 Architecture Guide</h3>
+                    <p>Deep dive into LLM Wall's design, multi-agent security system, and Coral integration architecture.</p>
+                    <a href="docs/ARCHITECTURE.md" target="_blank" class="doc-link">Read More →</a>
+                </div>
+
+                <div class="doc-card">
+                    <h3>🚀 Deployment Guide</h3>
+                    <p>Step-by-step instructions for deploying LLM Wall in production with different LLM providers.</p>
+                    <a href="docs/DEPLOYMENT_GUIDE.md" target="_blank" class="doc-link">Read More →</a>
+                </div>
+
+                <div class="doc-card">
+                    <h3>🐚 Coral Integration</h3>
+                    <p>Complete reference for Coral-powered subsystems: Investigator, PatternHunter, Honeypot, Policy Generator.</p>
+                    <a href="https://github.com/sanmarg/LLM-Wall/tree/main/llm_wall/coral" target="_blank" class="doc-link">Read More →</a>
+                </div>
+
+                <div class="doc-card">
+                    <h3>🔧 Configuration</h3>
+                    <p>Environment variables, Coral source setup, Guardian thresholds, and MARL agent configuration.</p>
+                    <a href="https://github.com/sanmarg/LLM-Wall/blob/main/llm_wall/config.py" target="_blank" class="doc-link">Read More →</a>
+                </div>
+
+                <div class="doc-card">
+                    <h3>🔌 API Reference</h3>
+                    <p>Complete REST API documentation for all endpoints including Coral, Sentinel, Ledger, and MCP.</p>
+                    <a href="https://github.com/sanmarg/LLM-Wall/tree/main/llm_wall/api" target="_blank" class="doc-link">Read More →</a>
+                </div>
+
+                <div class="doc-card">
+                    <h3>🧪 Testing Guide</h3>
+                    <p>How to run the 63 E2E tests, write new tests, and verify the Coral integration.</p>
+                    <a href="https://github.com/sanmarg/LLM-Wall/blob/main/test_e2e.py" target="_blank" class="doc-link">Read More →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="tech-stack">
+        <div class="container">
+            <h2 class="section-title">Technology Stack</h2>
+            <p class="section-subtitle">Built with modern tools and frameworks</p>
+
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-name">Python 3.11+</div>
+                    <span class="tech-badge">Core Language</span>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">FastAPI</div>
+                    <span class="tech-badge">Web Framework</span>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">Coral 0.4.1</div>
+                    <span class="tech-badge">SQL Query Layer</span>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">Uvicorn</div>
+                    <span class="tech-badge">ASGI Server</span>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">React + Vite</div>
+                    <span class="tech-badge">Dashboard UI</span>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">Pydantic</div>
+                    <span class="tech-badge">Data Validation</span>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">asyncio</div>
+                    <span class="tech-badge">Async Runtime</span>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-name">MCP</div>
+                    <span class="tech-badge">Model Context Protocol</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contributors Section -->
+    <section class="contributors" id="contributors">
+        <div class="container">
+            <h2 class="section-title">Contributors</h2>
+            <p class="section-subtitle">Built with passion by our community</p>
+
+            <div class="contributors-grid">
+                <div class="contributor-card">
+                    <div class="contributor-avatar">
+                        <div class="avatar-initial">SP</div>
+                    </div>
+                    <h3 class="contributor-name">Sanmarg Paranjpe</h3>
+                    <p class="contributor-role">Creator & Lead Maintainer</p>
+                    <p class="contributor-bio">Security engineer and AI enthusiast focused on building safe, governed LLM infrastructure.</p>
+                    <div class="contributor-links">
+                        <a href="https://github.com/sanmarg" target="_blank" title="GitHub" class="social-link">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        </a>
+                        <a href="https://linkedin.com/in/sanmarg-paranjpe" target="_blank" title="LinkedIn" class="social-link">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.475-2.236-1.986-2.236-1.081 0-1.722.731-2.004 1.436-.103.25-.129.599-.129.948v5.421h-3.554s.05-8.736 0-9.643h3.554v1.364c.429-.647 1.194-1.567 2.905-1.567 2.12 0 3.714 1.388 3.714 4.373v5.473zM5.337 8.855c-1.144 0-1.915-.759-1.915-1.71 0-.962.771-1.71 1.96-1.71 1.188 0 1.914.748 1.938 1.71 0 .951-.75 1.71-1.983 1.71zm1.581 11.597H3.715V9.505h3.203v10.947zM22.225 0H1.771C.798 0 0 .774 0 1.729v20.542C0 23.227.798 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        </a>
+                        <a href="https://sanmarg.hashnode.dev" target="_blank" title="Blog" class="social-link">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm0 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 10 15.5 10 14 10.67 14 11.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 10 8.5 10 7 10.67 7 11.5 7.67 13 8.5 13zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+                        </a>
+                        <a href="mailto:ssp.paranjpe@gmail.com" title="Email" class="social-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contribution-info">
+                <h3>How to Contribute</h3>
+                <p>We welcome contributions from the community! Whether you're fixing bugs, adding features, improving documentation, or providing feedback, your help is invaluable.</p>
+
+                <div class="contribution-types">
+                    <div class="contrib-type">
+                        <h4>👨‍💻 Code Contributions</h4>
+                        <p>Submit bug fixes, features, and improvements via pull requests.</p>
+                    </div>
+                    <div class="contrib-type">
+                        <h4>📝 Documentation</h4>
+                        <p>Help improve guides, examples, and API documentation for better understanding.</p>
+                    </div>
+                    <div class="contrib-type">
+                        <h4>🐛 Bug Reports</h4>
+                        <p>Report issues you find and help us make LLM Wall more robust.</p>
+                    </div>
+                    <div class="contrib-type">
+                        <h4>🎯 Feature Requests</h4>
+                        <p>Suggest new features and improvements you'd like to see.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Secure Your LLM Infrastructure?</h2>
+            <p>Join teams using LLM Wall to govern and protect their AI deployments</p>
+            <div class="cta-buttons">
+                <a href="#quickstart" class="btn btn-primary btn-large">Get Started Now</a>
+                <a href="https://github.com/sanmarg/LLM-Wall" target="_blank" class="btn btn-secondary btn-large">Star on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h4>LLM Wall</h4>
+                    <p>Zero-trust security layer for LLM APIs. Built with Coral for cross-source investigation.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="https://github.com/sanmarg/LLM-Wall" target="_blank">GitHub Repository</a></li>
+                        <li><a href="https://github.com/sanmarg/LLM-Wall/releases" target="_blank">Releases</a></li>
+                        <li><a href="https://github.com/sanmarg/LLM-Wall/issues" target="_blank">Issues</a></li>
+                        <li><a href="https://github.com/sanmarg/LLM-Wall/discussions" target="_blank">Discussions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://coral-ai.com" target="_blank">Coral AI</a></li>
+                        <li><a href="https://modelcontextprotocol.io" target="_blank">MCP Specification</a></li>
+                        <li><a href="https://fastapi.tiangolo.com" target="_blank">FastAPI</a></li>
+                        <li><a href="https://python.org" target="_blank">Python</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Connect</h4>
+                    <ul>
+                        <li><a href="https://github.com/sanmarg" target="_blank">GitHub</a></li>
+                        <li><a href="https://linkedin.com/in/sanmarg-paranjpe" target="_blank">LinkedIn</a></li>
+                        <li><a href="https://sanmarg.hashnode.dev" target="_blank">Blog</a></li>
+                        <li><a href="mailto:ssp.paranjpe@gmail.com">Email</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="https://github.com/sanmarg/LLM-Wall/blob/main/LICENSE" target="_blank">MIT License</a></li>
+                        <li><a href="https://github.com/sanmarg/LLM-Wall/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 LLM Wall. Licensed under MIT. Created by Sanmarg Paranjpe.</p>
+                <div class="footer-badges">
+                    <span class="badge">MIT</span>
+                    <span class="badge">Open Source</span>
+                    <span class="badge">Coral Powered</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+</body>
+</html>
